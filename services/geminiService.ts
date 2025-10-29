@@ -34,14 +34,14 @@ export async function generateColoringPages(theme: string, name: string, numPage
                 },
             },
         });
-        
+
         const promptResponse = await promptGenerator;
         const promptJson: PromptGenerationResult = JSON.parse(promptResponse.text);
 
         const allPrompts = [promptJson.coverPrompt, ...promptJson.pagePrompts].filter(p => p); // Filter out any empty prompts
-        
+
         if (allPrompts.length < numPages + 1) {
-            throw new Error(`The AI only generated ${allPrompts.length -1} pages. Please try a different theme.`);
+            throw new Error(`The AI only generated ${allPrompts.length - 1} pages. Please try a different theme.`);
         }
 
         const base64Images: string[] = [];
