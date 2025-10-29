@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type, Chat, GenerateContentResponse } from "@google/genai";
 
 if (!process.env.API_KEY) {
@@ -15,11 +14,11 @@ interface PromptGenerationResult {
     pagePrompts: string[];
 }
 
-export async function generateColoringPages(theme: string, name: string): Promise<string[]> {
+export async function generateColoringPages(theme: string, name: string, numPages: number): Promise<string[]> {
     try {
         const promptGenerator = ai.models.generateContent({
             model: PROMPT_GENERATION_MODEL,
-            contents: `You are a creative assistant for children's content. A user wants a 5-page coloring book with a cover. The theme is '${theme}' and it's for a child named '${name}'. Generate creative and simple prompts for each of the 5 pages and the cover. The cover prompt must include the child's name. The prompts should describe scenes suitable for a young child's coloring page. Respond with ONLY a valid JSON object.`,
+            contents: `You are a creative assistant for children's content. A user wants a ${numPages}-page coloring book with a cover. The theme is '${theme}' and it's for a child named '${name}'. Generate creative and simple prompts for each of the ${numPages} pages and the cover. The cover prompt must include the child's name. The prompts should describe scenes suitable for a young child's coloring page. Respond with ONLY a valid JSON object.`,
             config: {
                 responseMimeType: "application/json",
                 responseSchema: {
@@ -39,15 +38,17 @@ export async function generateColoringPages(theme: string, name: string): Promis
         const promptResponse = await promptGenerator;
         const promptJson: PromptGenerationResult = JSON.parse(promptResponse.text);
 
-        const allPrompts = [promptJson.coverPrompt, ...promptJson.pagePrompts];
+        const allPrompts = [promptJson.coverPrompt, ...promptJson.pagePrompts].filter(p => p); // Filter out any empty prompts
         
-        if (allPrompts.length !== 6) {
-            throw new Error("Failed to generate the correct number of prompts.");
+        if (allPrompts.length < numPages + 1) {
+            throw new Error(`The AI only generated ${allPrompts.length -1} pages. Please try a different theme.`);
         }
 
-        const imagePromises = allPrompts.map(prompt => {
+        const base64Images: string[] = [];
+        // Generate images sequentially to avoid hitting API rate limits.
+        for (const prompt of allPrompts) {
             const fullPrompt = `A children's coloring book page. Scene: ${prompt}. Art style: thick, clean black outlines, no color, no shading, simple and cute vector style, for kids.`;
-            return ai.models.generateImages({
+            const imageResult = await ai.models.generateImages({
                 model: IMAGE_GENERATION_MODEL,
                 prompt: fullPrompt,
                 config: {
@@ -56,21 +57,21 @@ export async function generateColoringPages(theme: string, name: string): Promis
                     aspectRatio: '1:1',
                 },
             });
-        });
 
-        const imageResults = await Promise.all(imagePromises);
-        
-        const base64Images = imageResults.map(res => {
-            if (res.generatedImages && res.generatedImages.length > 0) {
-                return res.generatedImages[0].image.imageBytes;
+            if (imageResult.generatedImages && imageResult.generatedImages.length > 0) {
+                base64Images.push(imageResult.generatedImages[0].image.imageBytes);
+            } else {
+                throw new Error("Image generation failed for one of the prompts.");
             }
-            throw new Error("Image generation failed for one or more prompts.");
-        });
+        }
 
         return base64Images;
 
     } catch (error) {
         console.error("Error generating coloring pages:", error);
+        if (error instanceof Error && error.message.includes("RESOURCE_EXHAUSTED")) {
+            throw new Error("The image generator is very busy right now. Please wait a moment and try again.");
+        }
         throw new Error("Could not generate coloring book. Please try a different theme.");
     }
 }

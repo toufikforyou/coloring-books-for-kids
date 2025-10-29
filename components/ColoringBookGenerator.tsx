@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { generateColoringPages } from '../services/geminiService';
 import { DownloadIcon, SparklesIcon } from './icons';
@@ -20,13 +19,14 @@ const LoadingSpinner: React.FC = () => (
 const ColoringBookGenerator: React.FC = () => {
     const [theme, setTheme] = useState<string>('space dinosaurs');
     const [name, setName] = useState<string>('Alex');
+    const [numPages, setNumPages] = useState<number>(5);
     const [images, setImages] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
     const handleGenerate = async () => {
-        if (!theme || !name) {
-            setError('Please provide both a theme and a name.');
+        if (!theme || !name || !numPages || numPages < 1 || numPages > 10) {
+            setError('Please provide a theme, a name, and a number of pages between 1 and 10.');
             return;
         }
         setIsLoading(true);
@@ -34,7 +34,7 @@ const ColoringBookGenerator: React.FC = () => {
         setImages([]);
 
         try {
-            const generatedImages = await generateColoringPages(theme, name);
+            const generatedImages = await generateColoringPages(theme, name, numPages);
             setImages(generatedImages);
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred.');
@@ -75,7 +75,7 @@ const ColoringBookGenerator: React.FC = () => {
             <h2 className="text-3xl font-bold text-gray-800 text-center mb-2">Coloring Book Creator</h2>
             <p className="text-center text-gray-500 mb-6">Bring your ideas to life! Enter a theme and name to create a unique coloring book.</p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div>
                     <label htmlFor="theme" className="block text-sm font-medium text-gray-700 mb-1">Theme</label>
                     <input
@@ -96,6 +96,19 @@ const ColoringBookGenerator: React.FC = () => {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="e.g., Lily"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition"
+                        disabled={isLoading}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="pages" className="block text-sm font-medium text-gray-700 mb-1">Number of Pages</label>
+                    <input
+                        type="number"
+                        id="pages"
+                        value={numPages}
+                        onChange={(e) => setNumPages(Number(e.target.value))}
+                        min="1"
+                        max="10"
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-400 focus:border-pink-400 transition"
                         disabled={isLoading}
                     />
