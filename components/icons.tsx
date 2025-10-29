@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export const BookIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -34,5 +33,20 @@ export const UserIcon: React.FC<{ className?: string }> = ({ className }) => (
 export const SparklesIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m1-9l2.293-2.293a1 1 0 011.414 0l2.293 2.293m-4.586 4.586l-2.293 2.293a1 1 0 01-1.414 0l-2.293-2.293m10.586-4.586l2.293-2.293a1 1 0 011.414 0l2.293 2.293m-4.586 4.586l-2.293 2.293a1 1 0 01-1.414 0l-2.293-2.293m0-10.586l-2.293 2.293a1 1 0 01-1.414 0l-2.293-2.293" />
+    </svg>
+);
+
+export const CrayonIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.25 2.25L18.5 5.5l-9.25 9.25-4.25.5.5-4.25L15.25 2.25z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 6.5l-3-3m-1.5 13.5l-4-4" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 19l-2 2" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 15l-4 4" />
+    </svg>
+);
+
+export const RobotIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2a2 2 0 00-2 2v2H8a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2V8a2 2 0 00-2-2h-2V4a2 2 0 00-2-2zM9 12a1 1 0 11-2 0 1 1 0 012 0zm6 0a1 1 0 11-2 0 1 1 0 012 0zM9 16a1 1 0 110-2h6a1 1 0 110 2H9z" />
     </svg>
 );

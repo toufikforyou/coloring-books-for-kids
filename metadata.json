@@ -1,5 +1,5 @@
 {
-  "name": "Coloring Book Generator",
-  "description": "An interactive web application that uses Gemini to generate personalized children's coloring books from a theme and includes a friendly chatbot for kids to ask questions.",
+  "name": "Coloring Books for Kids",
+  "description": "An interactive web app to generate personalized children's coloring books with a friendly AI chatbot.",
   "requestFramePermissions": []
 }
